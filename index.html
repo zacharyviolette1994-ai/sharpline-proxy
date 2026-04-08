@@ -4,352 +4,719 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SharpLine</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <title>Sharp Line</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      background: #10121a; color: #c4c9d6;
-      font-family: 'Inter', sans-serif; min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-    }
-    #header {
-      padding: 20px 18px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
-      background: #10121a; position: sticky; top: 0; z-index: 10;
-    }
-    .logo-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .logo { font-size: 21px; font-weight: 600; letter-spacing: 3px; color: #e8ecf4; text-transform: uppercase; }
-    .logo span { color: #96c96b; }
-    #sync-btn {
-      background: rgba(150,201,107,0.1); border: 1px solid rgba(150,201,107,0.25);
-      color: #96c96b; font-family: 'DM Mono', monospace; font-size: 11px;
-      letter-spacing: 1px; padding: 7px 16px; border-radius: 8px; cursor: pointer;
-    }
-    #sync-btn:disabled { color: #444; border-color: rgba(255,255,255,0.06); }
-    .tab-row { display: flex; gap: 6px; margin-bottom: 10px; }
-    .market-row { display: flex; gap: 5px; margin-bottom: 16px; }
-    .sport-tab {
-      font-size: 13px; font-weight: 500; border-radius: 8px; cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.09); background: rgba(255,255,255,0.03);
-      color: #55606e; padding: 7px 18px;
-    }
-    .sport-tab.active { background: rgba(150,201,107,0.1); border-color: rgba(150,201,107,0.3); color: #b8d98a; }
-    .market-tab {
-      font-family: 'DM Mono', monospace; font-size: 11px; padding: 5px 16px;
-      border-radius: 7px; cursor: pointer; border: 1px solid rgba(255,255,255,0.09);
-      background: rgba(255,255,255,0.03); color: #55606e; letter-spacing: 0.5px;
-    }
-    .market-tab.active { background: rgba(150,201,107,0.14); border-color: rgba(150,201,107,0.35); color: #b8d98a; }
-    #search-wrap { padding: 14px 18px 8px; background: #10121a; }
-    #search {
-      width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09);
-      border-radius: 9px; padding: 10px 14px; color: #c4c9d6;
-      font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
-    }
-    #search::placeholder { color: #3a404e; }
-    #meta { font-family: 'DM Mono', monospace; font-size: 10px; color: #333844; margin-top: 8px; text-align: right; }
-    #games { padding: 6px 18px 60px; background: #10121a; }
-    .game-card {
-      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px; margin-bottom: 10px; overflow: hidden;
-    }
-    .game-header { padding: 14px 16px; cursor: pointer; }
-    .game-time {
-      font-family: 'DM Mono', monospace; font-size: 10px; color: #383e4d;
-      margin-bottom: 11px; display: flex; justify-content: space-between; align-items: center;
-    }
-    .game-time.live { color: #c96b6b; }
-    .chevron { color: #383e4d; font-size: 10px; }
-    .team-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
-    .team-info { display: flex; align-items: center; gap: 8px; }
-    .sharp-badge {
-      font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px;
-      color: #96c96b; background: rgba(150,201,107,0.1); border: 1px solid rgba(150,201,107,0.22);
-      padding: 1px 6px; border-radius: 4px;
-    }
-    .team-name { font-size: 15px; font-weight: 500; color: #dde2ee; }
-    .odds-val {
-      font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500;
-      padding: 3px 8px; border-radius: 6px; min-width: 62px; text-align: right; display: inline-block;
-    }
-    .odds-pos { color: #82c46e; }
-    .odds-neg { color: #c46e6e; }
-    .odds-sharp { color: #b8d98a; background: rgba(150,201,107,0.1); }
-    .odds-heavy { color: #444c5e; font-size: 12px; font-style: italic; }
-    .odds-none { color: #2e3340; }
-    .book-breakdown {
-      border-top: 1px solid rgba(255,255,255,0.06); padding: 12px 16px;
-      background: rgba(0,0,0,0.25); display: none;
-    }
-    .book-breakdown.open { display: block; }
-    .breakdown-title {
-      font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
-      color: #383e4d; margin-bottom: 10px; text-transform: uppercase;
-    }
-    .book-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-    .book-label { font-family: 'DM Mono', monospace; font-size: 11px; color: #424856; width: 42px; }
-    .book-odds { display: flex; gap: 6px; }
-    .error-box {
-      background: rgba(160,80,80,0.08); border: 1px solid rgba(160,80,80,0.18);
-      border-radius: 10px; padding: 14px; color: #a06060;
-      font-family: 'DM Mono', monospace; font-size: 11px; margin-bottom: 14px;
-    }
-    .empty-msg {
-      text-align: center; padding: 80px 0; color: #252830;
-      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+```
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #080c0f;
+  --surface: #0e1318;
+  --card:    #131a20;
+  --card2:   #19222a;
+  --border:  #1e2930;
+  --border2: #253040;
+  --text:    #d4dce6;
+  --muted:   #4a5a6a;
+  --dim:     #2a3a4a;
+  --accent:  #e8b84b;
+  --green:   #3dd68c;
+  --red:     #f05a5a;
+  --sharp:   #b76ef0;
+  --live:    #3dd68c;
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', 'SF Mono', 'Fira Code', monospace;
+  min-height: 100vh;
+}
+
+/* ── HEADER ─────────────────────────────────────── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+}
+.logo {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--accent);
+}
+.logo em { color: var(--muted); font-style: normal; }
+.sync-btn {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 1px;
+  transition: all 0.15s;
+}
+.sync-btn:hover { border-color: var(--accent); color: var(--accent); }
+.sync-btn.spinning { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── TABS ───────────────────────────────────────── */
+.tabs-row {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  display: flex;
+  gap: 0;
+}
+.sport-tab {
+  flex: 1;
+  padding: 11px 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.sport-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.mkt-row {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 16px;
+  display: flex;
+  gap: 6px;
+}
+.mkt-tab {
+  padding: 4px 14px;
+  background: none;
+  border: 1px solid var(--dim);
+  border-radius: 30px;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mkt-tab.active {
+  border-color: var(--text);
+  color: var(--text);
+  background: var(--card2);
+}
+
+/* ── SEARCH ─────────────────────────────────────── */
+.search-row {
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.search-input {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 12px;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 12px;
+}
+.search-input::placeholder { color: var(--dim); }
+.search-input:focus { outline: none; border-color: var(--border2); }
+
+/* ── GAMES ──────────────────────────────────────── */
+.games {
+  padding: 12px 16px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.game-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.game-card:hover, .game-card.open { border-color: var(--border2); }
+
+.game-main {
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.game-time {
+  font-size: 10px;
+  color: var(--muted);
+  min-width: 44px;
+  line-height: 1.5;
+}
+
+.game-teams { flex: 1; min-width: 0; }
+.t-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+.t-name {
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+.t-name.away { color: var(--muted); font-weight: 400; }
+.t-name.total-label { color: var(--text); font-weight: 500; font-size: 11px; letter-spacing: 1px; }
+
+.t-odds {
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 52px;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+.t-odds .pt { font-size: 11px; color: var(--muted); font-weight: 400; }
+.t-odds.pos .val { color: var(--green); }
+.t-odds.neg .val { color: var(--red); }
+.t-odds.na .val { color: var(--dim); font-size: 10px; font-weight: 400; }
+
+.game-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  min-width: 28px;
+}
+
+.badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 5px;
+  border-radius: 2px;
+}
+.badge.sharp {
+  background: rgba(183,110,240,0.12);
+  color: var(--sharp);
+  border: 1px solid rgba(183,110,240,0.25);
+}
+
+.chevron {
+  color: var(--dim);
+  font-size: 10px;
+  transition: transform 0.2s;
+}
+.game-card.open .chevron { transform: rotate(180deg); }
+
+/* ── BOOK BREAKDOWN ─────────────────────────────── */
+.breakdown {
+  display: none;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 10px 14px 12px;
+}
+.game-card.open .breakdown { display: block; }
+
+.bk-header {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.bk-team-col { flex: 1; min-width: 0; }
+.bk-col {
+  width: 42px;
+  text-align: center;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+
+.bk-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 3px;
+  align-items: center;
+}
+.bk-team {
+  flex: 1;
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bk-val {
+  width: 42px;
+  text-align: center;
+  font-size: 11px;
+  padding: 3px 2px;
+  border-radius: 2px;
+}
+.bk-val.pos { color: var(--green); }
+.bk-val.neg { color: var(--red); }
+.bk-val.na { color: var(--dim); }
+.bk-val.best { background: rgba(232,184,75,0.1); color: var(--accent); }
+.bk-val.sharp-book { text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--sharp); }
+
+/* ── STATES ─────────────────────────────────────── */
+.state { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 12px; letter-spacing: 1px; }
+.state.error { color: var(--red); }
+.state .blink { animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── STATUS BAR ─────────────────────────────────── */
+.status-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+```
+
   </style>
 </head>
 <body>
-<div id="header">
-  <div class="logo-row">
-    <div class="logo">Sharp<span>Line</span></div>
-    <button id="sync-btn" onclick="fetchOdds()">↻ sync</button>
-  </div>
-  <div class="tab-row">
-    <button class="sport-tab active" data-sport="basketball_nba" onclick="setSport(this)">🏀 NBA</button>
-    <button class="sport-tab" data-sport="baseball_mlb" onclick="setSport(this)">⚾ MLB</button>
-  </div>
-  <div class="market-row">
-    <button class="market-tab active" data-market="h2h" onclick="setMarket(this)">ML</button>
-    <button class="market-tab" data-market="spreads" onclick="setMarket(this)">SPD</button>
-    <button class="market-tab" data-market="totals" onclick="setMarket(this)">TOT</button>
-  </div>
+
+<div class="header">
+  <div class="logo">SHARP<em>LINE</em></div>
+  <button class="sync-btn" id="sync-btn" onclick="fetchOdds()">↻ SYNC</button>
 </div>
-<div id="search-wrap">
-  <input id="search" placeholder="Search team..." oninput="renderGames()" />
-  <div id="meta"></div>
+
+<div class="tabs-row">
+  <button class="sport-tab active" id="tab-nba" onclick="setSport('basketball_nba')">🏀 NBA</button>
+  <button class="sport-tab" id="tab-mlb" onclick="setSport('baseball_mlb')">⚾ MLB</button>
 </div>
-<div id="games"></div>
+
+<div class="mkt-row">
+  <button class="mkt-tab active" id="mkt-h2h"     onclick="setMarket('h2h')">ML</button>
+  <button class="mkt-tab"        id="mkt-spreads"  onclick="setMarket('spreads')">SPD</button>
+  <button class="mkt-tab"        id="mkt-totals"   onclick="setMarket('totals')">TOT</button>
+</div>
+
+<div class="search-row">
+  <input class="search-input" id="search" type="text" placeholder="search teams..." oninput="render()" />
+</div>
+
+<div class="games" id="games"></div>
+
+<div class="status-bar">
+  <span id="s-time">—</span>
+  <span id="s-count">—</span>
+</div>
 
 <script>
-const BOOK_LABELS = {
-  draftkings:"DK", fanduel:"FD", betmgm:"MGM", caesars:"CZR",
-  pointsbet:"PB", bovada:"BOV", betonlineag:"BOL", mybookieag:"MYB",
-  lowvig:"LVG", barstool:"BST", williamhill_us:"WH", unibet_us:"UNI",
-  betrivers:"BR", superbook:"SUP", betus:"BET",
+/* ──────────────────────────────────────────────────────
+   CONFIG
+────────────────────────────────────────────────────── */
+const PROXY = "https://sharpline-proxy.vercel.app/api/Odds";
+
+// Books known to take sharp/professional action
+// These are the ones that move their lines based on sharp bettors
+const SHARP_BOOKS  = new Set(["lowvig", "betonlineag", "pinnacle", "bookmaker", "williamhill_us"]);
+
+// Standard US-facing square sportsbooks
+const SQUARE_BOOKS = ["draftkings", "fanduel", "betmgm", "caesars", "pointsbet", "barstool", "mybookieag"];
+
+const BOOK_LABEL = {
+  draftkings: "DK",   fanduel: "FD",    betmgm: "MGM",
+  caesars: "CZR",     pointsbet: "PB",   barstool: "BST",
+  mybookieag: "MYB",  lowvig: "LVG",     betonlineag: "BOL",
+  pinnacle: "PIN",    bookmaker: "BKR",  williamhill_us: "WH",
+  bovada: "BOV",
 };
 
-// Anything beyond this is "no line" territory on the main display
-const HEAVY_THRESHOLD = 900;
-// SHARP only triggers when major books genuinely disagree by this much
-const SHARP_MIN_IQR = 20;
-const SHARP_MIN_BOOKS = 4;
+// ── Extreme line thresholds (lines beyond these are not useful to show)
+// These happen when a side is a massive underdog — the line is real but
+// practically useless for betting. We hide it rather than clutter the UI.
+const EXTREME = { h2h: 600, spreads: 250, totals: 250 };
 
-let currentSport = "basketball_nba";
-let currentMarket = "h2h";
-let allGames = [];
-let lastUpdated = null;
+/* ──────────────────────────────────────────────────────
+   STATE
+────────────────────────────────────────────────────── */
+let sport    = "basketball_nba";
+let market   = "h2h";
+let games    = [];
+let openIds  = new Set();
+let fetching = false;
 
-function setSport(el) {
-  document.querySelectorAll('.sport-tab').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  currentSport = el.dataset.sport;
-  fetchOdds();
+/* ──────────────────────────────────────────────────────
+   HELPERS
+────────────────────────────────────────────────────── */
+function isExtreme(price) {
+  if (price == null || !isFinite(price)) return true;
+  return Math.abs(price) > EXTREME[market];
 }
 
-function setMarket(el) {
-  document.querySelectorAll('.market-tab').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  currentMarket = el.dataset.market;
-  renderGames();
+// Get a team's outcome from a bookmaker for current market.
+// Returns { price, point } or null if missing/extreme.
+function getOutcome(bookmaker, teamName) {
+  const mkt = (bookmaker.markets || []).find(m => m.key === market);
+  if (!mkt) return null;
+  const o = (mkt.outcomes || []).find(o => o.name === teamName);
+  if (!o || isExtreme(o.price)) return null;
+  return { price: o.price, point: o.point ?? null };
 }
 
-function formatOdds(n) {
-  if (n == null) return "—";
-  if (Math.abs(n) >= HEAVY_THRESHOLD) return n < 0 ? "heavy fav" : "big dog";
-  return n > 0 ? `+${n}` : `${n}`;
+// Convert American odds → implied probability (no vig removed)
+function toProb(american) {
+  if (american < 0) return Math.abs(american) / (Math.abs(american) + 100);
+  return 100 / (american + 100);
 }
 
-function formatTime(ts) {
-  const d = new Date(ts);
-  return d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" }) +
-    "  " + d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
+// Convert implied probability → American odds
+function toAmerican(prob) {
+  if (prob >= 0.5) return Math.round(-(prob / (1 - prob)) * 100);
+  return Math.round(((1 - prob) / prob) * 100);
 }
 
-function median(arr) {
-  if (!arr.length) return null;
-  const s = [...arr].sort((a, b) => a - b);
-  const m = Math.floor(s.length / 2);
-  return s.length % 2 !== 0 ? s[m] : Math.round((s[m-1] + s[m]) / 2);
+// Consensus: average implied probabilities across valid odds, convert back
+function consensus(oddsArr) {
+  if (!oddsArr.length) return null;
+  const avg = oddsArr.reduce((s, v) => s + toProb(v), 0) / oddsArr.length;
+  return toAmerican(avg);
 }
 
-// Only use lines from major books within normal range for consensus
-function getCleanLines(bookmakers, market, team) {
-  const lines = [];
-  for (const bk of bookmakers) {
-    const m = bk.markets?.find(x => x.key === market);
-    const o = m?.outcomes?.find(x => x.name === team);
-    if (o?.price != null && Math.abs(o.price) < HEAVY_THRESHOLD) lines.push(o.price);
+// Consensus point value (spread / total line)
+function consensusPt(pts) {
+  if (!pts.length) return null;
+  const avg = pts.reduce((a, b) => a + b, 0) / pts.length;
+  return Math.round(avg * 2) / 2; // round to nearest 0.5
+}
+
+function fmt(price) {
+  if (price == null) return null;
+  return price > 0 ? `+${price}` : `${price}`;
+}
+function fmtPt(pt) {
+  if (pt == null) return "";
+  return pt > 0 ? `+${pt}` : `${pt}`;
+}
+function fmtTime(iso) {
+  return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+}
+
+/* ──────────────────────────────────────────────────────
+   SHARP DETECTION
+   
+   Logic: Compare what sharp books say vs what square books say.
+   SHARP fires only when:
+     1. At least 1 sharp book (lowvig, betonlineag, pinnacle, etc.) is present
+        AND at least 2 square books are present
+     2. Then one of these conditions:
+        A. Sharp books and square books disagree on WHO the favorite is
+           (sharps have the other side priced as favorite)
+        B. Same side is favorite in both, but sharps have a price that's
+           meaningfully different (>12 pts ML, >10 pts spread)
+           AND that difference is in the direction of the underdog
+           (sharps are giving better odds on the dog = sharp dog action)
+   
+   This prevents false positives from normal vig/line variation.
+────────────────────────────────────────────────────── */
+function detectSharp(game, t1, t2) {
+  if (market === "totals") return false; // Sharp detection not meaningful for totals without historical data
+
+  const sharpT1 = [], sharpT2 = [], squareT1 = [], squareT2 = [];
+
+  for (const bk of game.bookmakers) {
+    const o1 = getOutcome(bk, t1);
+    const o2 = getOutcome(bk, t2);
+    if (!o1 || !o2) continue; // need both sides from same book
+
+    if (SHARP_BOOKS.has(bk.key)) {
+      sharpT1.push(o1.price);
+      sharpT2.push(o2.price);
+    } else if (SQUARE_BOOKS.includes(bk.key)) {
+      squareT1.push(o1.price);
+      squareT2.push(o2.price);
+    }
   }
-  return lines;
+
+  // Need at least 1 sharp book AND 2 square books for a meaningful comparison
+  if (!sharpT1.length || squareT1.length < 2) return false;
+
+  const shpC1 = consensus(sharpT1);
+  const shpC2 = consensus(sharpT2);
+  const sqC1  = consensus(squareT1);
+  const sqC2  = consensus(squareT2);
+
+  if (!shpC1 || !shpC2 || !sqC1 || !sqC2) return false;
+
+  // Who is the favorite according to each group?
+  // More negative = bigger favorite
+  const sqFavsT1  = sqC1  < sqC2;   // squares think T1 is fav
+  const shpFavsT1 = shpC1 < shpC2;  // sharps think T1 is fav
+
+  // CONDITION A: They disagree on who the favorite is → clear sharp signal
+  if (sqFavsT1 !== shpFavsT1) return true;
+
+  // CONDITION B: Same side is favorite, but sharps are noticeably more
+  // favorable on the underdog (or less favorable on the fav).
+  // This indicates sharp money is on the dog.
+  const threshold = market === "spreads" ? 10 : 14;
+  const diff1 = Math.abs(shpC1 - sqC1);
+  const diff2 = Math.abs(shpC2 - sqC2);
+
+  // Which team is the underdog (more positive odds)?
+  const dogIsT1 = sqC1 > sqC2;
+  const dogDiff = dogIsT1 ? diff1 : diff2;
+  const favDiff = dogIsT1 ? diff2 : diff1;
+
+  // Sharp signal: sharps have significantly better odds on the dog
+  // but NOT just universal line movement (both sides moved same direction)
+  if (dogDiff > threshold && dogDiff > favDiff) return true;
+
+  return false;
 }
 
-function getAllLines(bookmakers, market, team) {
-  const lines = [];
-  for (const bk of bookmakers) {
-    const m = bk.markets?.find(x => x.key === market);
-    const o = m?.outcomes?.find(x => x.name === team);
-    if (o?.price != null) lines.push(o.price);
-  }
-  return lines;
-}
-
-function consensusLine(bookmakers, market, team) {
-  const clean = getCleanLines(bookmakers, market, team);
-  // If we have clean lines, use those; otherwise fall back to all lines
-  if (clean.length >= 2) return median(clean);
-  const all = getAllLines(bookmakers, market, team);
-  return all.length ? median(all) : null;
-}
-
-function consensusPoint(bookmakers, market, team) {
-  for (const bk of bookmakers) {
-    const m = bk.markets?.find(x => x.key === market);
-    const o = m?.outcomes?.find(x => x.name === team);
-    if (o?.point != null) return o.point;
-  }
-  return null;
-}
-
-// SHARP: only flags genuine disagreement between major books
-function isSharpMove(bookmakers, market, team) {
-  const lines = getCleanLines(bookmakers, market, team);
-  if (lines.length < SHARP_MIN_BOOKS) return false;
-  const sorted = [...lines].sort((a, b) => a - b);
-  const q1 = sorted[Math.floor(sorted.length * 0.25)];
-  const q3 = sorted[Math.floor(sorted.length * 0.75)];
-  const iqr = q3 - q1;
-  return iqr >= SHARP_MIN_IQR;
-}
-
-function oddsCell(value, point, sharp) {
-  const isHeavy = value != null && Math.abs(value) >= HEAVY_THRESHOLD;
-  const cls = isHeavy ? "odds-heavy"
-    : sharp ? "odds-sharp"
-    : value > 0 ? "odds-pos"
-    : value < 0 ? "odds-neg"
-    : "odds-none";
-  const pt = (!isHeavy && point != null && currentMarket !== "h2h")
-    ? `${point > 0 ? "+" : ""}${point} ` : "";
-  return `<span class="odds-val ${cls}">${pt}${formatOdds(value)}</span>`;
-}
-
-function bookOddsCell(value, point) {
-  // In breakdown, show actual numbers but cap display text
-  if (value == null) return `<span class="odds-val odds-none">—</span>`;
-  const isHeavy = Math.abs(value) >= HEAVY_THRESHOLD;
-  const cls = isHeavy ? "odds-heavy" : value > 0 ? "odds-pos" : "odds-neg";
-  const pt = (!isHeavy && point != null && currentMarket !== "h2h")
-    ? `${point > 0 ? "+" : ""}${point} ` : "";
-  const display = isHeavy ? (value < 0 ? "fav" : "dog") : (value > 0 ? `+${value}` : `${value}`);
-  return `<span class="odds-val ${cls}">${pt}${display}</span>`;
-}
-
-function renderGames() {
-  const search = document.getElementById("search").value.toLowerCase();
+/* ──────────────────────────────────────────────────────
+   RENDER
+────────────────────────────────────────────────────── */
+function render() {
   const container = document.getElementById("games");
-  const meta = document.getElementById("meta");
+  const query = document.getElementById("search").value.toLowerCase().trim();
 
-  const filtered = allGames.filter(g =>
-    g.home_team.toLowerCase().includes(search) ||
-    g.away_team.toLowerCase().includes(search)
-  );
+  let list = games;
+  if (query) {
+    list = games.filter(g =>
+      g.home_team.toLowerCase().includes(query) ||
+      g.away_team.toLowerCase().includes(query)
+    );
+  }
 
-  if (lastUpdated) meta.textContent = `${filtered.length} games · ${lastUpdated.toLocaleTimeString()}`;
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-msg">no games found</div>`;
+  if (!list.length) {
+    container.innerHTML = `<div class="state">${query ? "no results" : "no games"}</div>`;
+    document.getElementById("s-count").textContent = "—";
     return;
   }
 
-  container.innerHTML = filtered.map((game, i) => {
-    const { home_team, away_team, bookmakers, commence_time } = game;
-    const isLive = new Date(commence_time) < new Date();
-    const teams = currentMarket === "totals"
-      ? [{ team: "Over" }, { team: "Under" }]
-      : [{ team: away_team }, { team: home_team }];
+  document.getElementById("s-count").textContent = `${list.length} game${list.length !== 1 ? "s" : ""}`;
 
-    const teamRows = teams.map(({ team }) => {
-      const odds = consensusLine(bookmakers, currentMarket, team);
-      const point = consensusPoint(bookmakers, currentMarket, team);
-      const sharp = isSharpMove(bookmakers, currentMarket, team);
-      return `
-        <div class="team-row">
-          <div class="team-info">
-            ${sharp ? `<span class="sharp-badge">sharp</span>` : ""}
-            <span class="team-name">${team}</span>
-          </div>
-          ${oddsCell(odds, point, sharp)}
-        </div>`;
-    }).join("");
+  // Which display books actually appear in the current data?
+  const allBookKeys = new Set();
+  for (const g of games) for (const bk of g.bookmakers) allBookKeys.add(bk.key);
 
-    const booksWithLine = bookmakers.filter(bk =>
-      teams.some(({ team }) => {
-        const m = bk.markets?.find(x => x.key === currentMarket);
-        return m?.outcomes?.find(x => x.name === team && x.price != null);
-      })
-    ).slice(0, 8);
+  // Preferred display order: squares first, then any sharp books present
+  const displayBooks = [
+    ...SQUARE_BOOKS.filter(k => allBookKeys.has(k)),
+    ...[...SHARP_BOOKS].filter(k => allBookKeys.has(k))
+  ].slice(0, 8); // cap at 8 books for display
 
-    const bookRows = booksWithLine.map(bk => {
-      const label = BOOK_LABELS[bk.key] || bk.key.slice(0,4).toUpperCase();
-      const cells = teams.map(({ team }) => {
-        const m = bk.markets?.find(x => x.key === currentMarket);
-        const o = m?.outcomes?.find(x => x.name === team);
-        return bookOddsCell(o?.price ?? null, o?.point ?? null);
+  const isTotal = market === "totals";
+
+  container.innerHTML = list.map(game => {
+    const { id, home_team, away_team, commence_time, bookmakers } = game;
+    const isOpen = openIds.has(id);
+
+    // For totals, teams are "Over" / "Under"
+    const t1 = isTotal ? "Over"  : home_team;
+    const t2 = isTotal ? "Under" : away_team;
+
+    // Collect valid odds across all books
+    const allP1 = [], allP2 = [], allPt1 = [], allPt2 = [];
+    const bookMap = {}; // key → { p1, p2, pt1, pt2 }
+
+    for (const bk of bookmakers) {
+      const o1 = getOutcome(bk, t1);
+      const o2 = getOutcome(bk, t2);
+      bookMap[bk.key] = { o1, o2 };
+      if (o1) { allP1.push(o1.price); if (o1.point != null) allPt1.push(o1.point); }
+      if (o2) { allP2.push(o2.price); if (o2.point != null) allPt2.push(o2.point); }
+    }
+
+    const consP1  = consensus(allP1);
+    const consP2  = consensus(allP2);
+    const consPt1 = consensusPt(allPt1);
+    const consPt2 = consensusPt(allPt2);
+
+    const isSharp = detectSharp(game, t1, t2);
+
+    // Best price per side (highest number = most favorable to bettor)
+    const bestP1 = allP1.length ? Math.max(...allP1) : null;
+    const bestP2 = allP2.length ? Math.max(...allP2) : null;
+
+    // Render consensus odds cell
+    function oddsCell(p, pt) {
+      if (p == null) return `<div class="t-odds na"><span class="val">N/A</span></div>`;
+      const cls = p > 0 ? "pos" : "neg";
+      const ptStr = (pt != null && market !== "h2h") ? `<span class="pt">${fmtPt(pt)}</span>` : "";
+      return `<div class="t-odds ${cls}">${ptStr}<span class="val">${fmt(p)}</span></div>`;
+    }
+
+    const sharpBadge = isSharp ? `<span class="badge sharp">⚡ SHARP</span>` : "";
+
+    // Book breakdown header
+    const bkHeader = displayBooks.map(k =>
+      `<div class="bk-col">${BOOK_LABEL[k] || k}</div>`
+    ).join("");
+
+    // Book row for one team
+    function bkRow(label, side, bestP) {
+      const cells = displayBooks.map(k => {
+        const o = bookMap[k]?.[side];
+        if (!o) return `<div class="bk-val na">—</div>`;
+        const isBest  = o.price === bestP;
+        const isSharpBk = SHARP_BOOKS.has(k);
+        const cls = [
+          o.price > 0 ? "pos" : "neg",
+          isBest    ? "best"       : "",
+          isSharpBk ? "sharp-book" : ""
+        ].filter(Boolean).join(" ");
+        const ptStr = (o.point != null && market !== "h2h") ? `${fmtPt(o.point)} ` : "";
+        return `<div class="bk-val ${cls}">${ptStr}${fmt(o.price)}</div>`;
       }).join("");
-      return `<div class="book-row"><span class="book-label">${label}</span><div class="book-odds">${cells}</div></div>`;
-    }).join("");
+      return `<div class="bk-row"><div class="bk-team">${label}</div>${cells}</div>`;
+    }
+
+    const label1 = isTotal ? "OVER"  : home_team.split(" ").pop();
+    const label2 = isTotal ? "UNDER" : away_team.split(" ").pop();
+
+    const timeStr = fmtTime(commence_time);
+    const sport_label = game.sport_key === "basketball_nba" ? "NBA" : "MLB";
 
     return `
-      <div class="game-card">
-        <div class="game-header" onclick="toggleCard(${i})">
-          <div class="game-time ${isLive ? "live" : ""}">
-            <span>${isLive ? "● live" : formatTime(commence_time)}</span>
-            <span class="chevron" id="chevron-${i}">▼</span>
-          </div>
-          ${teamRows}
-        </div>
-        <div class="book-breakdown" id="breakdown-${i}">
-          <div class="breakdown-title">Book Breakdown</div>
-          ${bookRows || '<div style="color:#383e4d;font-size:10px;font-family:DM Mono,monospace">no lines available</div>'}
-        </div>
-      </div>`;
+<div class="game-card ${isOpen ? "open" : ""}" id="gc-${id}" onclick="toggleGame('${id}')">
+  <div class="game-main">
+    <div class="game-time">${timeStr}<br><span style="font-size:9px;color:var(--dim)">${sport_label}</span></div>
+    <div class="game-teams">
+      <div class="t-row">
+        <span class="t-name ${isTotal ? 'total-label' : 'away'}">${isTotal ? "OVER" : away_team}</span>
+        ${oddsCell(consP2, consPt2)}
+      </div>
+      <div class="t-row">
+        <span class="t-name ${isTotal ? 'total-label' : ''}">${isTotal ? "UNDER" : home_team}</span>
+        ${oddsCell(consP1, consPt1)}
+      </div>
+    </div>
+    <div class="game-meta">
+      ${sharpBadge}
+      <span class="chevron">▾</span>
+    </div>
+  </div>
+  <div class="breakdown">
+    <div class="bk-header">
+      <div class="bk-team-col"></div>
+      ${bkHeader}
+    </div>
+    ${bkRow(label2, "o2", bestP2)}
+    ${bkRow(label1, "o1", bestP1)}
+    ${isSharp ? `<div style="margin-top:8px;font-size:10px;color:var(--sharp);opacity:0.8;">⚡ sharp books underlined — disagree with public line</div>` : ""}
+  </div>
+</div>`;
   }).join("");
 }
 
-function toggleCard(i) {
-  const bd = document.getElementById(`breakdown-${i}`);
-  const ch = document.getElementById(`chevron-${i}`);
-  bd.classList.toggle("open");
-  ch.textContent = bd.classList.contains("open") ? "▲" : "▼";
+function toggleGame(id) {
+  if (openIds.has(id)) openIds.delete(id);
+  else openIds.add(id);
+  document.getElementById(`gc-${id}`).classList.toggle("open");
+  // Re-render the single card in place — avoids full re-render flicker
+  render();
 }
 
+/* ──────────────────────────────────────────────────────
+   FETCH
+────────────────────────────────────────────────────── */
 async function fetchOdds() {
+  if (fetching) return;
+  fetching = true;
+
   const btn = document.getElementById("sync-btn");
-  const container = document.getElementById("games");
-  btn.disabled = true;
-  btn.textContent = "syncing...";
-  container.innerHTML = `<div class="empty-msg">fetching lines...</div>`;
+  btn.classList.add("spinning");
+
+  document.getElementById("games").innerHTML = `<div class="state">fetching lines<span class="blink">_</span></div>`;
+  document.getElementById("s-time").textContent  = "syncing...";
+  document.getElementById("s-count").textContent = "—";
+
   try {
-    const res = await fetch(`/api/Odds?sport=${currentSport}&markets=h2h,spreads,totals`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const url = `${PROXY}?sport=${sport}`;
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      let msg = `HTTP ${res.status}`;
+      try { const j = await res.json(); msg = j.error || msg; } catch {}
+      throw new Error(msg);
+    }
+
     const data = await res.json();
-    if (!Array.isArray(data)) throw new Error(data?.message || "Unexpected response");
-    allGames = data.sort((a,b) => new Date(a.commence_time) - new Date(b.commence_time));
-    lastUpdated = new Date();
-    renderGames();
-  } catch(e) {
-    container.innerHTML = `<div class="error-box">⚠ ${e.message}</div>`;
+
+    if (!Array.isArray(data)) {
+      // Could be an error object from the Odds API itself
+      const msg = data?.message || data?.error || "Unexpected response";
+      throw new Error(msg);
+    }
+
+    // Sort by start time ascending
+    games = data.sort((a, b) => new Date(a.commence_time) - new Date(b.commence_time));
+
+    const now = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+    document.getElementById("s-time").textContent = `synced ${now}`;
+
+    render();
+  } catch (e) {
+    document.getElementById("games").innerHTML = `<div class="state error">⚠ ${e.message}</div>`;
+    document.getElementById("s-time").textContent  = "error";
+    document.getElementById("s-count").textContent = "—";
   } finally {
-    btn.disabled = false;
-    btn.textContent = "↻ sync";
+    fetching = false;
+    btn.classList.remove("spinning");
   }
 }
 
+/* ──────────────────────────────────────────────────────
+   SPORT / MARKET TOGGLE
+────────────────────────────────────────────────────── */
+function setSport(s) {
+  sport = s;
+  games = [];
+  openIds.clear();
+  document.getElementById("tab-nba").classList.toggle("active", s === "basketball_nba");
+  document.getElementById("tab-mlb").classList.toggle("active", s === "baseball_mlb");
+  fetchOdds();
+}
+
+function setMarket(m) {
+  market = m;
+  document.getElementById("mkt-h2h").classList.toggle("active",    m === "h2h");
+  document.getElementById("mkt-spreads").classList.toggle("active", m === "spreads");
+  document.getElementById("mkt-totals").classList.toggle("active",  m === "totals");
+  render();
+}
+
+/* ──────────────────────────────────────────────────────
+   INIT
+────────────────────────────────────────────────────── */
 fetchOdds();
 </script>
 
