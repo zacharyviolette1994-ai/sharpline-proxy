@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SharpLine</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+```
+body {
+  background: #070911;
+  color: #e0e0e0;
+  font-family: 'Barlow Condensed', sans-serif;
+  min-height: 100vh;
+}
+
+#header {
+  padding: 18px 18px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(7,9,17,0.96);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.logo-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #fff;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.logo span { color: #b8ff3a; }
+
+.logo-sub {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #2a2a2a;
+  margin-top: 3px;
+}
+
+#sync-btn {
+  background: transparent;
+  border: 1px solid rgba(184,255,58,0.25);
+  color: #b8ff3a;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#sync-btn:disabled { color: #444; cursor: default; }
+
+.tab-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.market-row { display: flex; gap: 4px; margin-bottom: 14px; }
+
+.sport-tab, .market-tab {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  letter-spacing: 2px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: transparent;
+  color: #444;
+  font-size: 13px;
+  padding: 6px 18px;
+}
+
+.sport-tab.active {
+  background: rgba(184,255,58,0.1);
+  border-color: rgba(184,255,58,0.35);
+  color: #b8ff3a;
+}
+
+.market-tab {
+  font-size: 12px;
+  padding: 4px 16px;
+  border-radius: 5px;
+}
+
+.market-tab.active {
+  background: #b8ff3a;
+  border-color: #b8ff3a;
+  color: #070911;
+}
+
+#search-wrap { padding: 14px 18px 8px; }
+
+#search {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 7px;
+  padding: 9px 14px;
+  color: #d0d0d0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+  outline: none;
+}
+
+#meta {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #2a2a2a;
+  margin-top: 7px;
+  text-align: right;
+}
+
+#games { padding: 0 18px 60px; }
+
+.game-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.game-header {
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.game-time {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #3a3a3a;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.game-time.live { color: #ff6a6a; }
+
+.team-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.team-info { display: flex; align-items: center; gap: 8px; }
+
+.sharp-badge {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: #b8ff3a;
+  background: rgba(184,255,58,0.1);
+  border: 1px solid rgba(184,255,58,0.2);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.team-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #d8d8d8;
+}
+
+.odds-val {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  min-width: 50px;
+  text-align: right;
+  display: inline-block;
+}
+
+.odds-pos { color: #6affa0; }
+.odds-neg { color: #ff7070; }
+.odds-sharp { color: #b8ff3a; background: rgba(184,255,58,0.1); }
+.odds-none { color: #444; }
+
+.book-breakdown {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.25);
+  display: none;
+}
+
+.book-breakdown.open { display: block; }
+
+.breakdown-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.book-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.book-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #444;
+  width: 42px;
+}
+
+.book-odds { display: flex; gap: 4px; }
+
+.error-box {
+  background: rgba(255,100,100,0.07);
+  border: 1px solid rgba(255,100,100,0.15);
+  border-radius: 8px;
+  padding: 14px;
+  color: #ff7070;
+  font-family: monospace;
+  font-size: 11px;
+  margin-bottom: 14px;
+}
+
+.empty-msg {
+  text-align: center;
+  padding: 80px 0;
+  color: #2a2a2a;
+  letter-spacing: 3px;
+  font-size: 11px;
+}
+```
+
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<div id="header">
+  <div class="logo-row">
+    <div>
+      <div class="logo">SHARP<span>LINE</span></div>
+      <div class="logo-sub">LIVE ODDS INTELLIGENCE</div>
+    </div>
+    <button id="sync-btn" onclick="fetchOdds()">↻ SYNC</button>
+  </div>
+
+  <div class="tab-row">
+    <button class="sport-tab active" data-sport="basketball_nba" onclick="setSport(this)">🏀 NBA</button>
+    <button class="sport-tab" data-sport="baseball_mlb" onclick="setSport(this)">⚾ MLB</button>
+  </div>
+
+  <div class="market-row">
+    <button class="market-tab active" data-market="h2h" onclick="setMarket(this)">ML</button>
+    <button class="market-tab" data-market="spreads" onclick="setMarket(this)">SPD</button>
+    <button class="market-tab" data-market="totals" onclick="setMarket(this)">TOT</button>
+  </div>
+</div>
+
+<div id="search-wrap">
+  <input id="search" placeholder="Search team..." oninput="renderGames()" />
+  <div id="meta"></div>
+</div>
+
+<div id="games"></div>
+
+<script>
+const BOOK_LABELS = {
+  draftkings:"DK", fanduel:"FD", betmgm:"MGM", caesars:"CZR",
+  pointsbet:"PB", bovada:"BOV", betonlineag:"BOL", mybookieag:"MYB",
+  lowvig:"LVG", barstool:"BST", williamhill_us:"WH", unibet_us:"UNI",
+  betrivers:"BR", superbook:"SUP", betus:"BET",
+};
+
+let currentSport = "basketball_nba";
+let currentMarket = "h2h";
+let allGames = [];
+let lastUpdated = null;
+
+function setSport(el) {
+  document.querySelectorAll('.sport-tab').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentSport = el.dataset.sport;
+  fetchOdds();
+}
+
+function setMarket(el) {
+  document.querySelectorAll('.market-tab').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentMarket = el.dataset.market;
+  renderGames();
+}
+
+function formatOdds(n) {
+  if (n == null) return "—";
+  return n > 0 ? `+${n}` : `${n}`;
+}
+
+function formatTime(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" }) +
+    " · " + d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
+}
+
+function consensusLine(bookmakers, market, team) {
+  const lines = [];
+  for (const bk of bookmakers) {
+    const m = bk.markets?.find(x => x.key === market);
+    const o = m?.outcomes?.find(x => x.name === team);
+    if (o?.price != null) lines.push(o.price);
+  }
+  if (!lines.length) return null;
+  return Math.round(lines.reduce((a,b) => a+b, 0) / lines.length);
+}
+
+function consensusPoint(bookmakers, market, team) {
+  for (const bk of bookmakers) {
+    const m = bk.markets?.find(x => x.key === market);
+    const o = m?.outcomes?.find(x => x.name === team);
+    if (o?.point != null) return o.point;
+  }
+  return null;
+}
+
+function lineSpread(bookmakers, market, team) {
+  const lines = [];
+  for (const bk of bookmakers) {
+    const m = bk.markets?.find(x => x.key === market);
+    const o = m?.outcomes?.find(x => x.name === team);
+    if (o?.price != null) lines.push(o.price);
+  }
+  if (lines.length < 2) return 0;
+  return Math.max(...lines) - Math.min(...lines);
+}
+
+function oddsCell(value, point, sharp) {
+  const cls = sharp ? "odds-sharp" : value > 0 ? "odds-pos" : value < 0 ? "odds-neg" : "odds-none";
+  const pt = (point != null && currentMarket !== "h2h") ? `${point > 0 ? "+" : ""}${point} ` : "";
+  return `<span class="odds-val ${cls}">${pt}${formatOdds(value)}</span>`;
+}
+
+function renderGames() {
+  const search = document.getElementById("search").value.toLowerCase();
+  const container = document.getElementById("games");
+  const meta = document.getElementById("meta");
+
+  const filtered = allGames.filter(g =>
+    g.home_team.toLowerCase().includes(search) ||
+    g.away_team.toLowerCase().includes(search)
+  );
+
+  if (lastUpdated) {
+    meta.textContent = `${filtered.length} GAMES · SYNCED ${lastUpdated.toLocaleTimeString()}`;
+  }
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-msg">NO GAMES FOUND</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map((game, i) => {
+    const { home_team, away_team, bookmakers, commence_time } = game;
+    const isLive = new Date(commence_time) < new Date();
+
+    const teams = currentMarket === "totals"
+      ? [{ team: "Over" }, { team: "Under" }]
+      : [{ team: away_team }, { team: home_team }];
+
+    const sharpTeam = teams.reduce((best, t) => {
+      const s = lineSpread(bookmakers, currentMarket, t.team);
+      return s > (best?.score ?? 0) ? { team: t.team, score: s } : best;
+    }, null);
+
+    const teamRows = teams.map(({ team }) => {
+      const odds = consensusLine(bookmakers, currentMarket, team);
+      const point = consensusPoint(bookmakers, currentMarket, team);
+      const isSharp = sharpTeam?.team === team && sharpTeam?.score >= 15;
+      return `
+        <div class="team-row">
+          <div class="team-info">
+            ${isSharp ? `<span class="sharp-badge">SHARP</span>` : ""}
+            <span class="team-name">${team}</span>
+          </div>
+          ${oddsCell(odds, point, isSharp)}
+        </div>`;
+    }).join("");
+
+    const bookRows = bookmakers.slice(0, 8).map(bk => {
+      const label = BOOK_LABELS[bk.key] || bk.key.slice(0,4).toUpperCase();
+      const cells = teams.map(({ team }) => {
+        const m = bk.markets?.find(x => x.key === currentMarket);
+        const o = m?.outcomes?.find(x => x.name === team);
+        return oddsCell(o?.price ?? null, o?.point ?? null, false);
+      }).join("");
+      return `<div class="book-row"><span class="book-label">${label}</span><div class="book-odds">${cells}</div></div>`;
+    }).join("");
+
+    return `
+      <div class="game-card">
+        <div class="game-header" onclick="toggleCard(${i})">
+          <div class="game-time ${isLive ? "live" : ""}">
+            <span>${isLive ? "● LIVE" : formatTime(commence_time)}</span>
+            <span id="chevron-${i}">▼</span>
+          </div>
+          ${teamRows}
+        </div>
+        <div class="book-breakdown" id="breakdown-${i}">
+          <div class="breakdown-title">BOOK BREAKDOWN</div>
+          ${bookRows}
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function toggleCard(i) {
+  const bd = document.getElementById(`breakdown-${i}`);
+  const ch = document.getElementById(`chevron-${i}`);
+  bd.classList.toggle("open");
+  ch.textContent = bd.classList.contains("open") ? "▲" : "▼";
+}
+
+async function fetchOdds() {
+  const btn = document.getElementById("sync-btn");
+  const container = document.getElementById("games");
+  btn.disabled = true;
+  btn.textContent = "SYNCING...";
+  container.innerHTML = `<div class="empty-msg">FETCHING LINES...</div>`;
+
+  try {
+    const res = await fetch(`/api/Odds?sport=${currentSport}&markets=h2h,spreads,totals`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error(data?.message || "Unexpected response");
+    allGames = data.sort((a,b) => new Date(a.commence_time) - new Date(b.commence_time));
+    lastUpdated = new Date();
+    renderGames();
+  } catch(e) {
+    container.innerHTML = `<div class="error-box">⚠ ${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "↻ SYNC";
+  }
+}
+
+fetchOdds();
+</script>
+
+</body>
+</html>
