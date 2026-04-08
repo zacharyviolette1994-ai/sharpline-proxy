@@ -10,9 +10,9 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
 ```
-body {
-  background: #0d0f14;
-  color: #a8adb8;
+html, body {
+  background: #10121a;
+  color: #c4c9d6;
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -20,45 +20,44 @@ body {
 
 #header {
   padding: 20px 18px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  background: rgba(13,15,20,0.97);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: #10121a;
   position: sticky;
   top: 0;
   z-index: 10;
-  backdrop-filter: blur(12px);
 }
 
 .logo-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .logo {
   font-family: 'Inter', sans-serif;
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 600;
-  letter-spacing: 2px;
-  color: #d0d4de;
+  letter-spacing: 3px;
+  color: #e8ecf4;
   text-transform: uppercase;
 }
 
-.logo span { color: #8dbb5e; }
+.logo span { color: #96c96b; }
 
 #sync-btn {
-  background: rgba(141,187,94,0.08);
-  border: 1px solid rgba(141,187,94,0.2);
-  color: #8dbb5e;
+  background: rgba(150,201,107,0.1);
+  border: 1px solid rgba(150,201,107,0.25);
+  color: #96c96b;
   font-family: 'DM Mono', monospace;
   font-size: 11px;
   letter-spacing: 1px;
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 8px;
   cursor: pointer;
 }
 
-#sync-btn:disabled { color: #333; border-color: rgba(255,255,255,0.06); cursor: default; }
+#sync-btn:disabled { color: #444; border-color: rgba(255,255,255,0.06); }
 
 .tab-row { display: flex; gap: 6px; margin-bottom: 10px; }
 .market-row { display: flex; gap: 5px; margin-bottom: 16px; }
@@ -69,16 +68,16 @@ body {
   font-weight: 500;
   border-radius: 8px;
   cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.07);
-  background: transparent;
-  color: #555b6e;
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(255,255,255,0.03);
+  color: #55606e;
   padding: 7px 18px;
 }
 
 .sport-tab.active {
-  background: rgba(141,187,94,0.08);
-  border-color: rgba(141,187,94,0.25);
-  color: #a8cc78;
+  background: rgba(150,201,107,0.1);
+  border-color: rgba(150,201,107,0.3);
+  color: #b8d98a;
 }
 
 .market-tab {
@@ -87,47 +86,53 @@ body {
   padding: 5px 16px;
   border-radius: 7px;
   cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.07);
-  background: transparent;
-  color: #555b6e;
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(255,255,255,0.03);
+  color: #55606e;
   letter-spacing: 0.5px;
 }
 
 .market-tab.active {
-  background: rgba(141,187,94,0.12);
-  border-color: rgba(141,187,94,0.3);
-  color: #a8cc78;
+  background: rgba(150,201,107,0.14);
+  border-color: rgba(150,201,107,0.35);
+  color: #b8d98a;
 }
 
-#search-wrap { padding: 14px 18px 8px; }
+#search-wrap {
+  padding: 14px 18px 8px;
+  background: #10121a;
+}
 
 #search {
   width: 100%;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
   border-radius: 9px;
   padding: 10px 14px;
-  color: #a8adb8;
+  color: #c4c9d6;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   outline: none;
 }
 
-#search::placeholder { color: #3a3f4d; }
+#search::placeholder { color: #3a404e; }
 
 #meta {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #2e3340;
+  color: #333844;
   margin-top: 8px;
   text-align: right;
 }
 
-#games { padding: 4px 18px 60px; }
+#games {
+  padding: 6px 18px 60px;
+  background: #10121a;
+}
 
 .game-card {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
   margin-bottom: 10px;
   overflow: hidden;
@@ -138,15 +143,15 @@ body {
 .game-time {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #2e3340;
+  color: #383e4d;
   margin-bottom: 11px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.game-time.live { color: #c06060; }
-.chevron { color: #2e3340; font-size: 9px; }
+.game-time.live { color: #c96b6b; }
+.chevron { color: #383e4d; font-size: 10px; }
 
 .team-row {
   display: flex;
@@ -161,9 +166,9 @@ body {
   font-family: 'DM Mono', monospace;
   font-size: 9px;
   letter-spacing: 1px;
-  color: #8dbb5e;
-  background: rgba(141,187,94,0.08);
-  border: 1px solid rgba(141,187,94,0.18);
+  color: #96c96b;
+  background: rgba(150,201,107,0.1);
+  border: 1px solid rgba(150,201,107,0.22);
   padding: 1px 6px;
   border-radius: 4px;
 }
@@ -171,29 +176,30 @@ body {
 .team-name {
   font-size: 15px;
   font-weight: 500;
-  color: #c8cdd8;
+  color: #dde2ee;
+  letter-spacing: 0.1px;
 }
 
 .odds-val {
   font-family: 'DM Mono', monospace;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 5px;
-  min-width: 54px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  min-width: 58px;
   text-align: right;
   display: inline-block;
 }
 
-.odds-pos { color: #7aaa68; }
-.odds-neg { color: #9e6060; }
-.odds-sharp { color: #a8cc78; background: rgba(141,187,94,0.08); }
-.odds-none { color: #333844; }
+.odds-pos { color: #82c46e; }
+.odds-neg { color: #c46e6e; }
+.odds-sharp { color: #b8d98a; background: rgba(150,201,107,0.1); }
+.odds-none { color: #2e3340; }
 
 .book-breakdown {
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(255,255,255,0.06);
   padding: 12px 16px;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.25);
   display: none;
 }
 
@@ -203,7 +209,7 @@ body {
   font-family: 'DM Mono', monospace;
   font-size: 9px;
   letter-spacing: 1.5px;
-  color: #2e3340;
+  color: #383e4d;
   margin-bottom: 10px;
   text-transform: uppercase;
 }
@@ -213,24 +219,24 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 6px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
 }
 
 .book-label {
   font-family: 'DM Mono', monospace;
   font-size: 11px;
-  color: #3a3f4d;
+  color: #424856;
   width: 42px;
 }
 
-.book-odds { display: flex; gap: 4px; }
+.book-odds { display: flex; gap: 6px; }
 
 .error-box {
-  background: rgba(160,80,80,0.07);
-  border: 1px solid rgba(160,80,80,0.15);
+  background: rgba(160,80,80,0.08);
+  border: 1px solid rgba(160,80,80,0.18);
   border-radius: 10px;
   padding: 14px;
-  color: #9e6060;
+  color: #a06060;
   font-family: 'DM Mono', monospace;
   font-size: 11px;
   margin-bottom: 14px;
