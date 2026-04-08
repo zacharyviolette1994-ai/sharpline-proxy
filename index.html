@@ -347,21 +347,21 @@ const PROXY = "https://sharpline-proxy.vercel.app/api/Odds";
 const SHARP_BOOKS  = new Set(["lowvig", "betonlineag", "pinnacle", "bookmaker", "williamhill_us"]);
 
 // Standard US-facing square sportsbooks
-const SQUARE_BOOKS = ["draftkings", "fanduel", "betmgm", "caesars", "pointsbet", "barstool", "mybookieag"];
+const SQUARE_BOOKS = ["draftkings", "fanduel", "betmgm", "williamhill_us", "pointsbet", "barstool", "mybookieag"];
 
 const BOOK_LABEL = {
-  draftkings: "DK",   fanduel: "FD",    betmgm: "MGM",
-  caesars: "CZR",     pointsbet: "PB",   barstool: "BST",
-  mybookieag: "MYB",  lowvig: "LVG",     betonlineag: "BOL",
-  pinnacle: "PIN",    bookmaker: "BKR",  williamhill_us: "WH",
-  bovada: "BOV",
+  draftkings: "DK",   fanduel: "FD",      betmgm: "MGM",
+  williamhill_us: "CZR", pointsbet: "PB", barstool: "BST",
+  mybookieag: "MYB",  lowvig: "LVG",      betonlineag: "BOL",
+  pinnacle: "PIN",    bookmaker: "BKR",   bovada: "BOV",
+  caesars: "CZR",
 };
 
 // ── Extreme line thresholds (lines beyond these are not useful to show)
 // These happen when a side is a massive underdog — the line is real but
 // practically useless for betting. We hide it rather than clutter the UI.
 // Hide lines beyond these — real but unplayable junk
-const EXTREME = { h2h: 300, spreads: 175, totals: 175 };
+const EXTREME = { h2h: 350, spreads: 175, totals: 175 };
 // Also hide if point spread/total is absurd
 const EXTREME_PT = { spreads: 20, totals: 30 };
 
