@@ -9,17 +9,13 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
-      background: #10121a;
-      color: #c4c9d6;
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
+      background: #10121a; color: #c4c9d6;
+      font-family: 'Inter', sans-serif; min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
     #header {
-      padding: 20px 18px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      background: #10121a;
-      position: sticky; top: 0; z-index: 10;
+      padding: 20px 18px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: #10121a; position: sticky; top: 0; z-index: 10;
     }
     .logo-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .logo { font-size: 21px; font-weight: 600; letter-spacing: 3px; color: #e8ecf4; text-transform: uppercase; }
@@ -79,8 +75,8 @@
     .odds-pos { color: #82c46e; }
     .odds-neg { color: #c46e6e; }
     .odds-sharp { color: #b8d98a; background: rgba(150,201,107,0.1); }
+    .odds-heavy { color: #444c5e; font-size: 12px; font-style: italic; }
     .odds-none { color: #2e3340; }
-    .odds-heavy { color: #555b6e; font-size: 11px; }
     .book-breakdown {
       border-top: 1px solid rgba(255,255,255,0.06); padding: 12px 16px;
       background: rgba(0,0,0,0.25); display: none;
@@ -137,8 +133,11 @@ const BOOK_LABELS = {
   betrivers:"BR", superbook:"SUP", betus:"BET",
 };
 
-// Lines beyond this are "no line" territory — heavy favorites
-const DISPLAY_CAP = 2500;
+// Anything beyond this is "no line" territory on the main display
+const HEAVY_THRESHOLD = 900;
+// SHARP only triggers when major books genuinely disagree by this much
+const SHARP_MIN_IQR = 20;
+const SHARP_MIN_BOOKS = 4;
 
 let currentSport = "basketball_nba";
 let currentMarket = "h2h";
@@ -161,7 +160,7 @@ function setMarket(el) {
 
 function formatOdds(n) {
   if (n == null) return "—";
-  if (Math.abs(n) > DISPLAY_CAP) return n < 0 ? "heavy fav" : `+${Math.round(n/100)*100}+`;
+  if (Math.abs(n) >= HEAVY_THRESHOLD) return n < 0 ? "heavy fav" : "big dog";
   return n > 0 ? `+${n}` : `${n}`;
 }
 
@@ -173,12 +172,23 @@ function formatTime(ts) {
 
 function median(arr) {
   if (!arr.length) return null;
-  const sorted = [...arr].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 !== 0 ? sorted[mid] : Math.round((sorted[mid-1] + sorted[mid]) / 2);
+  const s = [...arr].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 !== 0 ? s[m] : Math.round((s[m-1] + s[m]) / 2);
 }
 
-function getLines(bookmakers, market, team) {
+// Only use lines from major books within normal range for consensus
+function getCleanLines(bookmakers, market, team) {
+  const lines = [];
+  for (const bk of bookmakers) {
+    const m = bk.markets?.find(x => x.key === market);
+    const o = m?.outcomes?.find(x => x.name === team);
+    if (o?.price != null && Math.abs(o.price) < HEAVY_THRESHOLD) lines.push(o.price);
+  }
+  return lines;
+}
+
+function getAllLines(bookmakers, market, team) {
   const lines = [];
   for (const bk of bookmakers) {
     const m = bk.markets?.find(x => x.key === market);
@@ -189,7 +199,11 @@ function getLines(bookmakers, market, team) {
 }
 
 function consensusLine(bookmakers, market, team) {
-  return median(getLines(bookmakers, market, team));
+  const clean = getCleanLines(bookmakers, market, team);
+  // If we have clean lines, use those; otherwise fall back to all lines
+  if (clean.length >= 2) return median(clean);
+  const all = getAllLines(bookmakers, market, team);
+  return all.length ? median(all) : null;
 }
 
 function consensusPoint(bookmakers, market, team) {
@@ -201,21 +215,38 @@ function consensusPoint(bookmakers, market, team) {
   return null;
 }
 
-function lineSpread(bookmakers, market, team) {
-  // Only count lines within a reasonable range for sharp detection
-  const lines = getLines(bookmakers, market, team).filter(x => Math.abs(x) <= DISPLAY_CAP);
-  if (lines.length < 2) return 0;
+// SHARP: only flags genuine disagreement between major books
+function isSharpMove(bookmakers, market, team) {
+  const lines = getCleanLines(bookmakers, market, team);
+  if (lines.length < SHARP_MIN_BOOKS) return false;
   const sorted = [...lines].sort((a, b) => a - b);
   const q1 = sorted[Math.floor(sorted.length * 0.25)];
   const q3 = sorted[Math.floor(sorted.length * 0.75)];
-  return Math.max(q3 - q1, Math.max(...lines) - Math.min(...lines));
+  const iqr = q3 - q1;
+  return iqr >= SHARP_MIN_IQR;
 }
 
 function oddsCell(value, point, sharp) {
-  const isHeavy = value != null && Math.abs(value) > DISPLAY_CAP;
-  const cls = isHeavy ? "odds-heavy" : sharp ? "odds-sharp" : value > 0 ? "odds-pos" : value < 0 ? "odds-neg" : "odds-none";
-  const pt = (!isHeavy && point != null && currentMarket !== "h2h") ? `${point > 0 ? "+" : ""}${point} ` : "";
+  const isHeavy = value != null && Math.abs(value) >= HEAVY_THRESHOLD;
+  const cls = isHeavy ? "odds-heavy"
+    : sharp ? "odds-sharp"
+    : value > 0 ? "odds-pos"
+    : value < 0 ? "odds-neg"
+    : "odds-none";
+  const pt = (!isHeavy && point != null && currentMarket !== "h2h")
+    ? `${point > 0 ? "+" : ""}${point} ` : "";
   return `<span class="odds-val ${cls}">${pt}${formatOdds(value)}</span>`;
+}
+
+function bookOddsCell(value, point) {
+  // In breakdown, show actual numbers but cap display text
+  if (value == null) return `<span class="odds-val odds-none">—</span>`;
+  const isHeavy = Math.abs(value) >= HEAVY_THRESHOLD;
+  const cls = isHeavy ? "odds-heavy" : value > 0 ? "odds-pos" : "odds-neg";
+  const pt = (!isHeavy && point != null && currentMarket !== "h2h")
+    ? `${point > 0 ? "+" : ""}${point} ` : "";
+  const display = isHeavy ? (value < 0 ? "fav" : "dog") : (value > 0 ? `+${value}` : `${value}`);
+  return `<span class="odds-val ${cls}">${pt}${display}</span>`;
 }
 
 function renderGames() {
@@ -242,26 +273,20 @@ function renderGames() {
       ? [{ team: "Over" }, { team: "Under" }]
       : [{ team: away_team }, { team: home_team }];
 
-    const sharpTeam = teams.reduce((best, t) => {
-      const s = lineSpread(bookmakers, currentMarket, t.team);
-      return s > (best?.score ?? 0) ? { team: t.team, score: s } : best;
-    }, null);
-
     const teamRows = teams.map(({ team }) => {
       const odds = consensusLine(bookmakers, currentMarket, team);
       const point = consensusPoint(bookmakers, currentMarket, team);
-      const isSharp = sharpTeam?.team === team && sharpTeam?.score >= 10;
+      const sharp = isSharpMove(bookmakers, currentMarket, team);
       return `
         <div class="team-row">
           <div class="team-info">
-            ${isSharp ? `<span class="sharp-badge">sharp</span>` : ""}
+            ${sharp ? `<span class="sharp-badge">sharp</span>` : ""}
             <span class="team-name">${team}</span>
           </div>
-          ${oddsCell(odds, point, isSharp)}
+          ${oddsCell(odds, point, sharp)}
         </div>`;
     }).join("");
 
-    // For breakdown, filter out books with no line for this market
     const booksWithLine = bookmakers.filter(bk =>
       teams.some(({ team }) => {
         const m = bk.markets?.find(x => x.key === currentMarket);
@@ -274,7 +299,7 @@ function renderGames() {
       const cells = teams.map(({ team }) => {
         const m = bk.markets?.find(x => x.key === currentMarket);
         const o = m?.outcomes?.find(x => x.name === team);
-        return oddsCell(o?.price ?? null, o?.point ?? null, false);
+        return bookOddsCell(o?.price ?? null, o?.point ?? null);
       }).join("");
       return `<div class="book-row"><span class="book-label">${label}</span><div class="book-odds">${cells}</div></div>`;
     }).join("");
@@ -290,7 +315,7 @@ function renderGames() {
         </div>
         <div class="book-breakdown" id="breakdown-${i}">
           <div class="breakdown-title">Book Breakdown</div>
-          ${bookRows || '<div style="color:#383e4d;font-family:DM Mono,monospace;font-size:10px">no lines available</div>'}
+          ${bookRows || '<div style="color:#383e4d;font-size:10px;font-family:DM Mono,monospace">no lines available</div>'}
         </div>
       </div>`;
   }).join("");
