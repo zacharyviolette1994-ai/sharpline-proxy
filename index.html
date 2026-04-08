@@ -682,8 +682,11 @@ async function fetchOdds() {
       throw new Error(msg);
     }
 
-    // Sort by start time ascending
-    games = data.sort((a, b) => new Date(a.commence_time) - new Date(b.commence_time));
+    // Only upcoming games — drop anything that's already started
+    const now = Date.now();
+    games = data
+      .filter(g => new Date(g.commence_time).getTime() > now)
+      .sort((a, b) => new Date(a.commence_time) - new Date(b.commence_time));
 
     const now = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
     document.getElementById("s-time").textContent = `synced ${now}`;
