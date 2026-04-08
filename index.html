@@ -8,247 +8,106 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-```
-html, body {
-  background: #10121a;
-  color: #c4c9d6;
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-}
-
-#header {
-  padding: 20px 18px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  background: #10121a;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.logo-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.logo {
-  font-family: 'Inter', sans-serif;
-  font-size: 21px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  color: #e8ecf4;
-  text-transform: uppercase;
-}
-
-.logo span { color: #96c96b; }
-
-#sync-btn {
-  background: rgba(150,201,107,0.1);
-  border: 1px solid rgba(150,201,107,0.25);
-  color: #96c96b;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 1px;
-  padding: 7px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-#sync-btn:disabled { color: #444; border-color: rgba(255,255,255,0.06); }
-
-.tab-row { display: flex; gap: 6px; margin-bottom: 10px; }
-.market-row { display: flex; gap: 5px; margin-bottom: 16px; }
-
-.sport-tab {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 8px;
-  cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.09);
-  background: rgba(255,255,255,0.03);
-  color: #55606e;
-  padding: 7px 18px;
-}
-
-.sport-tab.active {
-  background: rgba(150,201,107,0.1);
-  border-color: rgba(150,201,107,0.3);
-  color: #b8d98a;
-}
-
-.market-tab {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  padding: 5px 16px;
-  border-radius: 7px;
-  cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.09);
-  background: rgba(255,255,255,0.03);
-  color: #55606e;
-  letter-spacing: 0.5px;
-}
-
-.market-tab.active {
-  background: rgba(150,201,107,0.14);
-  border-color: rgba(150,201,107,0.35);
-  color: #b8d98a;
-}
-
-#search-wrap { padding: 14px 18px 8px; background: #10121a; }
-
-#search {
-  width: 100%;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: 9px;
-  padding: 10px 14px;
-  color: #c4c9d6;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  outline: none;
-}
-
-#search::placeholder { color: #3a404e; }
-
-#meta {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: #333844;
-  margin-top: 8px;
-  text-align: right;
-}
-
-#games { padding: 6px 18px 60px; background: #10121a; }
-
-.game-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-
-.game-header { padding: 14px 16px; cursor: pointer; }
-
-.game-time {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: #383e4d;
-  margin-bottom: 11px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.game-time.live { color: #c96b6b; }
-.chevron { color: #383e4d; font-size: 10px; }
-
-.team-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
-}
-
-.team-info { display: flex; align-items: center; gap: 8px; }
-
-.sharp-badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1px;
-  color: #96c96b;
-  background: rgba(150,201,107,0.1);
-  border: 1px solid rgba(150,201,107,0.22);
-  padding: 1px 6px;
-  border-radius: 4px;
-}
-
-.team-name {
-  font-size: 15px;
-  font-weight: 500;
-  color: #dde2ee;
-}
-
-.odds-val {
-  font-family: 'DM Mono', monospace;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 3px 8px;
-  border-radius: 6px;
-  min-width: 58px;
-  text-align: right;
-  display: inline-block;
-}
-
-.odds-pos { color: #82c46e; }
-.odds-neg { color: #c46e6e; }
-.odds-sharp { color: #b8d98a; background: rgba(150,201,107,0.1); }
-.odds-none { color: #2e3340; }
-
-.book-breakdown {
-  border-top: 1px solid rgba(255,255,255,0.06);
-  padding: 12px 16px;
-  background: rgba(0,0,0,0.25);
-  display: none;
-}
-
-.book-breakdown.open { display: block; }
-
-.breakdown-title {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  color: #383e4d;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-}
-
-.book-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-
-.book-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: #424856;
-  width: 42px;
-}
-
-.book-odds { display: flex; gap: 6px; }
-
-.error-box {
-  background: rgba(160,80,80,0.08);
-  border: 1px solid rgba(160,80,80,0.18);
-  border-radius: 10px;
-  padding: 14px;
-  color: #a06060;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  margin-bottom: 14px;
-}
-
-.empty-msg {
-  text-align: center;
-  padding: 80px 0;
-  color: #252830;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 2px;
-}
-```
-
+    html, body {
+      background: #10121a;
+      color: #c4c9d6;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    #header {
+      padding: 20px 18px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: #10121a;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .logo-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .logo { font-size: 21px; font-weight: 600; letter-spacing: 3px; color: #e8ecf4; text-transform: uppercase; }
+    .logo span { color: #96c96b; }
+    #sync-btn {
+      background: rgba(150,201,107,0.1); border: 1px solid rgba(150,201,107,0.25);
+      color: #96c96b; font-family: 'DM Mono', monospace; font-size: 11px;
+      letter-spacing: 1px; padding: 7px 16px; border-radius: 8px; cursor: pointer;
+    }
+    #sync-btn:disabled { color: #444; border-color: rgba(255,255,255,0.06); }
+    .tab-row { display: flex; gap: 6px; margin-bottom: 10px; }
+    .market-row { display: flex; gap: 5px; margin-bottom: 16px; }
+    .sport-tab {
+      font-size: 13px; font-weight: 500; border-radius: 8px; cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.09); background: rgba(255,255,255,0.03);
+      color: #55606e; padding: 7px 18px;
+    }
+    .sport-tab.active { background: rgba(150,201,107,0.1); border-color: rgba(150,201,107,0.3); color: #b8d98a; }
+    .market-tab {
+      font-family: 'DM Mono', monospace; font-size: 11px; padding: 5px 16px;
+      border-radius: 7px; cursor: pointer; border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(255,255,255,0.03); color: #55606e; letter-spacing: 0.5px;
+    }
+    .market-tab.active { background: rgba(150,201,107,0.14); border-color: rgba(150,201,107,0.35); color: #b8d98a; }
+    #search-wrap { padding: 14px 18px 8px; background: #10121a; }
+    #search {
+      width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 9px; padding: 10px 14px; color: #c4c9d6;
+      font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
+    }
+    #search::placeholder { color: #3a404e; }
+    #meta { font-family: 'DM Mono', monospace; font-size: 10px; color: #333844; margin-top: 8px; text-align: right; }
+    #games { padding: 6px 18px 60px; background: #10121a; }
+    .game-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; margin-bottom: 10px; overflow: hidden;
+    }
+    .game-header { padding: 14px 16px; cursor: pointer; }
+    .game-time {
+      font-family: 'DM Mono', monospace; font-size: 10px; color: #383e4d;
+      margin-bottom: 11px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .game-time.live { color: #c96b6b; }
+    .chevron { color: #383e4d; font-size: 10px; }
+    .team-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
+    .team-info { display: flex; align-items: center; gap: 8px; }
+    .sharp-badge {
+      font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px;
+      color: #96c96b; background: rgba(150,201,107,0.1); border: 1px solid rgba(150,201,107,0.22);
+      padding: 1px 6px; border-radius: 4px;
+    }
+    .team-name { font-size: 15px; font-weight: 500; color: #dde2ee; }
+    .odds-val {
+      font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500;
+      padding: 3px 8px; border-radius: 6px; min-width: 62px; text-align: right; display: inline-block;
+    }
+    .odds-pos { color: #82c46e; }
+    .odds-neg { color: #c46e6e; }
+    .odds-sharp { color: #b8d98a; background: rgba(150,201,107,0.1); }
+    .odds-none { color: #2e3340; }
+    .odds-heavy { color: #555b6e; font-size: 11px; }
+    .book-breakdown {
+      border-top: 1px solid rgba(255,255,255,0.06); padding: 12px 16px;
+      background: rgba(0,0,0,0.25); display: none;
+    }
+    .book-breakdown.open { display: block; }
+    .breakdown-title {
+      font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
+      color: #383e4d; margin-bottom: 10px; text-transform: uppercase;
+    }
+    .book-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .book-label { font-family: 'DM Mono', monospace; font-size: 11px; color: #424856; width: 42px; }
+    .book-odds { display: flex; gap: 6px; }
+    .error-box {
+      background: rgba(160,80,80,0.08); border: 1px solid rgba(160,80,80,0.18);
+      border-radius: 10px; padding: 14px; color: #a06060;
+      font-family: 'DM Mono', monospace; font-size: 11px; margin-bottom: 14px;
+    }
+    .empty-msg {
+      text-align: center; padding: 80px 0; color: #252830;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px;
+    }
   </style>
 </head>
 <body>
-
 <div id="header">
   <div class="logo-row">
     <div class="logo">Sharp<span>Line</span></div>
@@ -264,12 +123,10 @@ html, body {
     <button class="market-tab" data-market="totals" onclick="setMarket(this)">TOT</button>
   </div>
 </div>
-
 <div id="search-wrap">
   <input id="search" placeholder="Search team..." oninput="renderGames()" />
   <div id="meta"></div>
 </div>
-
 <div id="games"></div>
 
 <script>
@@ -279,6 +136,9 @@ const BOOK_LABELS = {
   lowvig:"LVG", barstool:"BST", williamhill_us:"WH", unibet_us:"UNI",
   betrivers:"BR", superbook:"SUP", betus:"BET",
 };
+
+// Lines beyond this are "no line" territory — heavy favorites
+const DISPLAY_CAP = 2500;
 
 let currentSport = "basketball_nba";
 let currentMarket = "h2h";
@@ -301,6 +161,7 @@ function setMarket(el) {
 
 function formatOdds(n) {
   if (n == null) return "—";
+  if (Math.abs(n) > DISPLAY_CAP) return n < 0 ? "heavy fav" : `+${Math.round(n/100)*100}+`;
   return n > 0 ? `+${n}` : `${n}`;
 }
 
@@ -310,14 +171,11 @@ function formatTime(ts) {
     "  " + d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
 }
 
-// Median is resistant to outliers without dropping any lines
 function median(arr) {
   if (!arr.length) return null;
   const sorted = [...arr].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 !== 0
-    ? sorted[mid]
-    : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+  return sorted.length % 2 !== 0 ? sorted[mid] : Math.round((sorted[mid-1] + sorted[mid]) / 2);
 }
 
 function getLines(bookmakers, market, team) {
@@ -344,18 +202,19 @@ function consensusPoint(bookmakers, market, team) {
 }
 
 function lineSpread(bookmakers, market, team) {
-  const lines = getLines(bookmakers, market, team);
+  // Only count lines within a reasonable range for sharp detection
+  const lines = getLines(bookmakers, market, team).filter(x => Math.abs(x) <= DISPLAY_CAP);
   if (lines.length < 2) return 0;
-  // Use interquartile range to detect real disagreement vs outlier noise
   const sorted = [...lines].sort((a, b) => a - b);
   const q1 = sorted[Math.floor(sorted.length * 0.25)];
   const q3 = sorted[Math.floor(sorted.length * 0.75)];
-  return q3 - q1;
+  return Math.max(q3 - q1, Math.max(...lines) - Math.min(...lines));
 }
 
 function oddsCell(value, point, sharp) {
-  const cls = sharp ? "odds-sharp" : value > 0 ? "odds-pos" : value < 0 ? "odds-neg" : "odds-none";
-  const pt = (point != null && currentMarket !== "h2h") ? `${point > 0 ? "+" : ""}${point} ` : "";
+  const isHeavy = value != null && Math.abs(value) > DISPLAY_CAP;
+  const cls = isHeavy ? "odds-heavy" : sharp ? "odds-sharp" : value > 0 ? "odds-pos" : value < 0 ? "odds-neg" : "odds-none";
+  const pt = (!isHeavy && point != null && currentMarket !== "h2h") ? `${point > 0 ? "+" : ""}${point} ` : "";
   return `<span class="odds-val ${cls}">${pt}${formatOdds(value)}</span>`;
 }
 
@@ -369,9 +228,7 @@ function renderGames() {
     g.away_team.toLowerCase().includes(search)
   );
 
-  if (lastUpdated) {
-    meta.textContent = `${filtered.length} games · ${lastUpdated.toLocaleTimeString()}`;
-  }
+  if (lastUpdated) meta.textContent = `${filtered.length} games · ${lastUpdated.toLocaleTimeString()}`;
 
   if (!filtered.length) {
     container.innerHTML = `<div class="empty-msg">no games found</div>`;
@@ -381,7 +238,6 @@ function renderGames() {
   container.innerHTML = filtered.map((game, i) => {
     const { home_team, away_team, bookmakers, commence_time } = game;
     const isLive = new Date(commence_time) < new Date();
-
     const teams = currentMarket === "totals"
       ? [{ team: "Over" }, { team: "Under" }]
       : [{ team: away_team }, { team: home_team }];
@@ -405,7 +261,15 @@ function renderGames() {
         </div>`;
     }).join("");
 
-    const bookRows = bookmakers.slice(0, 8).map(bk => {
+    // For breakdown, filter out books with no line for this market
+    const booksWithLine = bookmakers.filter(bk =>
+      teams.some(({ team }) => {
+        const m = bk.markets?.find(x => x.key === currentMarket);
+        return m?.outcomes?.find(x => x.name === team && x.price != null);
+      })
+    ).slice(0, 8);
+
+    const bookRows = booksWithLine.map(bk => {
       const label = BOOK_LABELS[bk.key] || bk.key.slice(0,4).toUpperCase();
       const cells = teams.map(({ team }) => {
         const m = bk.markets?.find(x => x.key === currentMarket);
@@ -426,7 +290,7 @@ function renderGames() {
         </div>
         <div class="book-breakdown" id="breakdown-${i}">
           <div class="breakdown-title">Book Breakdown</div>
-          ${bookRows}
+          ${bookRows || '<div style="color:#383e4d;font-family:DM Mono,monospace;font-size:10px">no lines available</div>'}
         </div>
       </div>`;
   }).join("");
@@ -445,7 +309,6 @@ async function fetchOdds() {
   btn.disabled = true;
   btn.textContent = "syncing...";
   container.innerHTML = `<div class="empty-msg">fetching lines...</div>`;
-
   try {
     const res = await fetch(`/api/Odds?sport=${currentSport}&markets=h2h,spreads,totals`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
