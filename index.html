@@ -98,10 +98,7 @@ html, body {
   color: #b8d98a;
 }
 
-#search-wrap {
-  padding: 14px 18px 8px;
-  background: #10121a;
-}
+#search-wrap { padding: 14px 18px 8px; background: #10121a; }
 
 #search {
   width: 100%;
@@ -125,10 +122,7 @@ html, body {
   text-align: right;
 }
 
-#games {
-  padding: 6px 18px 60px;
-  background: #10121a;
-}
+#games { padding: 6px 18px 60px; background: #10121a; }
 
 .game-card {
   background: rgba(255,255,255,0.03);
@@ -177,7 +171,6 @@ html, body {
   font-size: 15px;
   font-weight: 500;
   color: #dde2ee;
-  letter-spacing: 0.1px;
 }
 
 .odds-val {
@@ -287,9 +280,6 @@ const BOOK_LABELS = {
   betrivers:"BR", superbook:"SUP", betus:"BET",
 };
 
-// Max reasonable odds to include in consensus — filters out junk alternate lines
-const MAX_ODDS = 1500;
-
 let currentSport = "basketball_nba";
 let currentMarket = "h2h";
 let allGames = [];
@@ -320,7 +310,7 @@ function formatTime(ts) {
     "  " + d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
 }
 
-// Use median instead of mean — much more resistant to outliers
+// Median is resistant to outliers without dropping any lines
 function median(arr) {
   if (!arr.length) return null;
   const sorted = [...arr].sort((a, b) => a - b);
@@ -330,17 +320,18 @@ function median(arr) {
     : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
 }
 
-function consensusLine(bookmakers, market, team) {
+function getLines(bookmakers, market, team) {
   const lines = [];
   for (const bk of bookmakers) {
     const m = bk.markets?.find(x => x.key === market);
     const o = m?.outcomes?.find(x => x.name === team);
-    // Filter out extreme outlier lines
-    if (o?.price != null && Math.abs(o.price) <= MAX_ODDS) {
-      lines.push(o.price);
-    }
+    if (o?.price != null) lines.push(o.price);
   }
-  return median(lines);
+  return lines;
+}
+
+function consensusLine(bookmakers, market, team) {
+  return median(getLines(bookmakers, market, team));
 }
 
 function consensusPoint(bookmakers, market, team) {
@@ -353,16 +344,13 @@ function consensusPoint(bookmakers, market, team) {
 }
 
 function lineSpread(bookmakers, market, team) {
-  const lines = [];
-  for (const bk of bookmakers) {
-    const m = bk.markets?.find(x => x.key === market);
-    const o = m?.outcomes?.find(x => x.name === team);
-    if (o?.price != null && Math.abs(o.price) <= MAX_ODDS) {
-      lines.push(o.price);
-    }
-  }
+  const lines = getLines(bookmakers, market, team);
   if (lines.length < 2) return 0;
-  return Math.max(...lines) - Math.min(...lines);
+  // Use interquartile range to detect real disagreement vs outlier noise
+  const sorted = [...lines].sort((a, b) => a - b);
+  const q1 = sorted[Math.floor(sorted.length * 0.25)];
+  const q3 = sorted[Math.floor(sorted.length * 0.75)];
+  return q3 - q1;
 }
 
 function oddsCell(value, point, sharp) {
@@ -406,7 +394,7 @@ function renderGames() {
     const teamRows = teams.map(({ team }) => {
       const odds = consensusLine(bookmakers, currentMarket, team);
       const point = consensusPoint(bookmakers, currentMarket, team);
-      const isSharp = sharpTeam?.team === team && sharpTeam?.score >= 15;
+      const isSharp = sharpTeam?.team === team && sharpTeam?.score >= 10;
       return `
         <div class="team-row">
           <div class="team-info">
