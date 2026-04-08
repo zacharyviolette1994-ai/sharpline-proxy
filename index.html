@@ -287,6 +287,9 @@ const BOOK_LABELS = {
   betrivers:"BR", superbook:"SUP", betus:"BET",
 };
 
+// Max reasonable odds to include in consensus — filters out junk alternate lines
+const MAX_ODDS = 1500;
+
 let currentSport = "basketball_nba";
 let currentMarket = "h2h";
 let allGames = [];
@@ -317,15 +320,27 @@ function formatTime(ts) {
     "  " + d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
 }
 
+// Use median instead of mean — much more resistant to outliers
+function median(arr) {
+  if (!arr.length) return null;
+  const sorted = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0
+    ? sorted[mid]
+    : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+}
+
 function consensusLine(bookmakers, market, team) {
   const lines = [];
   for (const bk of bookmakers) {
     const m = bk.markets?.find(x => x.key === market);
     const o = m?.outcomes?.find(x => x.name === team);
-    if (o?.price != null) lines.push(o.price);
+    // Filter out extreme outlier lines
+    if (o?.price != null && Math.abs(o.price) <= MAX_ODDS) {
+      lines.push(o.price);
+    }
   }
-  if (!lines.length) return null;
-  return Math.round(lines.reduce((a,b) => a+b, 0) / lines.length);
+  return median(lines);
 }
 
 function consensusPoint(bookmakers, market, team) {
@@ -342,7 +357,9 @@ function lineSpread(bookmakers, market, team) {
   for (const bk of bookmakers) {
     const m = bk.markets?.find(x => x.key === market);
     const o = m?.outcomes?.find(x => x.name === team);
-    if (o?.price != null) lines.push(o.price);
+    if (o?.price != null && Math.abs(o.price) <= MAX_ODDS) {
+      lines.push(o.price);
+    }
   }
   if (lines.length < 2) return 0;
   return Math.max(...lines) - Math.min(...lines);
