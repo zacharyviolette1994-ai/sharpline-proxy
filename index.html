@@ -360,7 +360,10 @@ const BOOK_LABEL = {
 // ── Extreme line thresholds (lines beyond these are not useful to show)
 // These happen when a side is a massive underdog — the line is real but
 // practically useless for betting. We hide it rather than clutter the UI.
-const EXTREME = { h2h: 600, spreads: 250, totals: 250 };
+// Hide lines beyond these — real but unplayable junk
+const EXTREME = { h2h: 300, spreads: 175, totals: 175 };
+// Also hide if point spread/total is absurd
+const EXTREME_PT = { spreads: 20, totals: 30 };
 
 /* ──────────────────────────────────────────────────────
    STATE
@@ -374,9 +377,11 @@ let fetching = false;
 /* ──────────────────────────────────────────────────────
    HELPERS
 ────────────────────────────────────────────────────── */
-function isExtreme(price) {
+function isExtreme(price, point) {
   if (price == null || !isFinite(price)) return true;
-  return Math.abs(price) > EXTREME[market];
+  if (Math.abs(price) > EXTREME[market]) return true;
+  if (point != null && EXTREME_PT[market] != null && Math.abs(point) > EXTREME_PT[market]) return true;
+  return false;
 }
 
 // Get a team's outcome from a bookmaker for current market.
@@ -385,7 +390,7 @@ function getOutcome(bookmaker, teamName) {
   const mkt = (bookmaker.markets || []).find(m => m.key === market);
   if (!mkt) return null;
   const o = (mkt.outcomes || []).find(o => o.name === teamName);
-  if (!o || isExtreme(o.price)) return null;
+  if (!o || isExtreme(o.price, o.point ?? null)) return null;
   return { price: o.price, point: o.point ?? null };
 }
 
